@@ -10,7 +10,8 @@ const getOriginalImg = (url) => {
         if (m[2] === 'jpeg') {
             format = 'jpg';
         }
-        return `${m[1]}?format=${format}&name=orig`;
+//        return `${m[1]}?format=${format}&name=orig`;
+        return `${m[1]}?format=${format}`;
     } else if ((m = url.match(/^(https?:\/\/\w+\.twimg\.com\/[^?]+)(\?.+)$/i))) {
         const pars = getQueryParams(url);
         if (!pars.format || !pars.name) {
@@ -19,7 +20,8 @@ const getOriginalImg = (url) => {
         if (pars.name === 'orig') {
             return url;
         }
-        return m[1] + '?format=' + pars.format + '&name=orig';
+//        return m[1] + '?format=' + pars.format + '&name=orig';
+        return m[1] + '?format=' + pars.format;
     } else {
         return url;
     }
@@ -321,7 +323,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         // Make description
         let description = '';
         if (showAuthorInDesc && showAuthorAvatarInDesc) {
-            description += picsPrefix;
+//            description += picsPrefix;
         }
         if (isRetweet) {
             if (showAuthorInDesc) {
@@ -403,10 +405,18 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
             description += `<small>${parseDate(item.created_at)}</small>`;
         }
 
+/*
         const link =
             originalItem.user?.screen_name && (originalItem.id_str || originalItem.conversation_id_str)
                 ? `https://x.com/${originalItem.user?.screen_name}/status/${originalItem.id_str || originalItem.conversation_id_str}`
                 : `https://x.com/${item.user?.screen_name}/status/${item.id_str || item.conversation_id_str}`;
+*/
+        const link = '';
+        if (showAuthorInDesc && showAuthorAvatarInDesc) {
+            link = picsPrefix;
+        }
+
+        
         return {
             title,
             author: [

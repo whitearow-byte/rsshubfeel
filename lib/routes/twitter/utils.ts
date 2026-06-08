@@ -10,7 +10,7 @@ const getOriginalImg = (url) => {
         if (m[2] === 'jpeg') {
             format = 'jpg';
         }
-//        return `${m[1]}?format=${format}&name=orig`;
+        //        return `${m[1]}?format=${format}&name=orig`;
         return `${m[1]}?format=${format}`;
     } else if ((m = url.match(/^(https?:\/\/\w+\.twimg\.com\/[^?]+)(\?.+)$/i))) {
         const pars = getQueryParams(url);
@@ -20,7 +20,7 @@ const getOriginalImg = (url) => {
         if (pars.name === 'orig') {
             return url;
         }
-//        return m[1] + '?format=' + pars.format + '&name=orig';
+        //        return m[1] + '?format=' + pars.format + '&name=orig';
         return m[1] + '?format=' + pars.format;
     } else {
         return url;
@@ -205,7 +205,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         return picsPrefix;
     };
 
-// Insert Start
+    // Insert Start
     const generatePicsUrl = (item) => {
         // When author avatar is shown, generate invisible <img> for inner images at the beginning of HTML
         // to please some RSS readers
@@ -231,7 +231,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         }
         return picsUrl;
     };
-// Insert End
+    // Insert End
 
     return data.map((item) => {
         // Handle subscriber-only prefix based on user preference
@@ -248,10 +248,10 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         let picsPrefix = generatePicsPrefix(item);
         let quote = '';
         let quoteInTitle = '';
-// Insert Start
-        let picsUrl = generatePicsUrl(item);
-// Insert End
-        
+        // Insert Start
+        const picsUrl = generatePicsUrl(item);
+        // Insert End
+
         // Make quote in description
         if (item.is_quote_status) {
             const quoteData = item.quoted_status;
@@ -350,9 +350,9 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         if (showAuthorAsTitleOnly) {
             title = originalItem.user?.name;
         }
-//↓Insert Start
+        // ↓Insert Start
         title = '';
-//↑Insert End
+        // ↑Insert End
 
         // Make description
         let description = '';
@@ -439,14 +439,14 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
             description += `<small>${parseDate(item.created_at)}</small>`;
         }
 
-/*
+        /*
         const link =
             originalItem.user?.screen_name && (originalItem.id_str || originalItem.conversation_id_str)
                 ? `https://x.com/${originalItem.user?.screen_name}/status/${originalItem.id_str || originalItem.conversation_id_str}`
                 : `https://x.com/${item.user?.screen_name}/status/${item.id_str || item.conversation_id_str}`;
 */
-const link = picsUrl;
-        
+        const link = picsUrl;
+
         return {
             title,
             author: [

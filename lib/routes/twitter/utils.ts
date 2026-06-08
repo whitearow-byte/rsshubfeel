@@ -350,10 +350,10 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         if (showAuthorAsTitleOnly) {
             title = originalItem.user?.name;
         }
-// ↓Insert Start
+        // ↓Insert Start
         title = '';
         title = originalItem.user?.name;
-// ↑Insert End
+        // ↑Insert End
 
         // Make description
         let description = '';

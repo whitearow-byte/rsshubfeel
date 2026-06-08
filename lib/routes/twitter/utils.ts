@@ -205,6 +205,34 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         return picsPrefix;
     };
 
+// Insert Start
+    const generatePicsUrl = (item) => {
+        // When author avatar is shown, generate invisible <img> for inner images at the beginning of HTML
+        // to please some RSS readers
+        let picsUrl = '';
+        if (item.extended_entities) {
+            for (const media of item.extended_entities.media) {
+                let content;
+                let originalImg;
+                switch (media.type) {
+                    case 'video':
+                        content = formatVideo(media, 'width="0" height="0"');
+                        break;
+
+                    case 'photo':
+                    default:
+                        originalImg = getOriginalImg(media.media_url_https);
+                        content = originalImg;
+                        break;
+                }
+
+                picsUrl += content;
+            }
+        }
+        return picsUrl;
+    };
+// Insert End
+
     return data.map((item) => {
         // Handle subscriber-only prefix based on user preference
         if (item.full_text?.startsWith('[Subscribers Only]')) {
@@ -220,7 +248,10 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         let picsPrefix = generatePicsPrefix(item);
         let quote = '';
         let quoteInTitle = '';
-
+// Insert Start
+        let picsUrl = generatePicsUrl(item);
+// Insert End
+        
         // Make quote in description
         if (item.is_quote_status) {
             const quoteData = item.quoted_status;
@@ -319,11 +350,14 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         if (showAuthorAsTitleOnly) {
             title = originalItem.user?.name;
         }
+//↓Insert Start
+        title = '';
+//↑Insert End
 
         // Make description
         let description = '';
         if (showAuthorInDesc && showAuthorAvatarInDesc) {
-//            description += picsPrefix;
+            description += picsPrefix;
         }
         if (isRetweet) {
             if (showAuthorInDesc) {
@@ -411,11 +445,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
                 ? `https://x.com/${originalItem.user?.screen_name}/status/${originalItem.id_str || originalItem.conversation_id_str}`
                 : `https://x.com/${item.user?.screen_name}/status/${item.id_str || item.conversation_id_str}`;
 */
-        const link = '';
-        if (showAuthorInDesc && showAuthorAvatarInDesc) {
-            link = picsPrefix;
-        }
-
+const link = picsUrl;
         
         return {
             title,
@@ -429,7 +459,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
             description,
             pubDate: parseDate(item.created_at),
             link,
-//            guid: link.replace('x.com', 'twitter.com'),
+            guid: link.replace('x.com', 'twitter.com'),
             category,
             _extra:
                 (isRetweet && {

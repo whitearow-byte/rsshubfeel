@@ -26,11 +26,14 @@ const middleware: MiddlewareHandler = async (ctx, next) => {
     const isRequesting = await cacheModule.globalCache.get(controlKey);
 
     if (isRequesting === '1') {
-        let retryTimes = process.env.NODE_ENV === 'test' ? 1 : 10;
+        // Optimized retry logic: reduced retry times and wait intervals
+        // Test: 1 retry × 500ms = 500ms max wait
+        // Prod: 5 retries × 1000ms = 5s max wait (vs 10 retries × 6s = 60s previously)
+        let retryTimes = process.env.NODE_ENV === 'test' ? 1 : 5;
         let bypass = false;
         while (retryTimes > 0) {
             // eslint-disable-next-line no-await-in-loop
-            await new Promise((resolve) => setTimeout(resolve, process.env.NODE_ENV === 'test' ? 3000 : 6000));
+            await new Promise((resolve) => setTimeout(resolve, process.env.NODE_ENV === 'test' ? 500 : 1000));
             // eslint-disable-next-line no-await-in-loop
             if ((await cacheModule.globalCache.get(controlKey)) !== '1') {
                 bypass = true;
